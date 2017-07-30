@@ -1,0 +1,13 @@
+@*<!---*@
+@model RuPM.Controllers.WikiController.CommentsModel
+@*--->*@
+<p>Comments:</p>
+@*<!---*@@foreach (var comment in Model.Comments)
+{ @*--->*@
+<div>@comment.Text</div>
+@*<!---*@} @*--->*@
+<p>&nbsp;</p>
+@*<!---*@@using (Html.BeginForm("CreateComment", "Wiki", FormMethod.Post))
+    { @*--->*@
+<div>@*<!---*@@Html.HiddenFor(x => x.Form.WikiPageId)@*--->*@ @*<!---*@@Html.TextAreaFor(x => x.Form.Text)@*--->*@ @Html.ValidationSummary() <input type="submit" value="Send" /></div>
+@*<!---*@}@*--->*@

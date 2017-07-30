@@ -1,0 +1,12 @@
+@*<!---*@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*--->*@
+<p>Навигация</p>
+<p>Название</p>
+<p>Текст</p>
+<p>Комментарии</p>
+@*<!---*@ @RenderBody() @*--->*@
+<p>@Model.Page.Id @{ Html.RenderAction("Comments", "Wiki", new {wikiPageId = Model.Page.Id}); }</p>
+<p>&nbsp;</p>

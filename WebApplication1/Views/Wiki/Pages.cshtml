@@ -1,0 +1,10 @@
+﻿@model RuPM.Controllers.WikiController.PagesViewModel
+
+<h2>title</h2>
+<a href="@Url.Action("EditPage")">Create New</a>
+<ul>
+    @foreach (var wikiPage in Model.Pages)
+    {
+        <li>@wikiPage.PageTitle <a href="@Url.Action("GetPage", new{pageId=wikiPage.Id})">View</a> <a href="@Url.Action("EditPage", new { pageId = wikiPage.Id })">Edit</a></li>
+    }
+</ul>
