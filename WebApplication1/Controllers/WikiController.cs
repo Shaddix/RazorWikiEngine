@@ -5,6 +5,7 @@ using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using RuPM.Models.Database;
@@ -180,6 +181,7 @@ namespace RuPM.Controllers
         }
         public string ParseContentForRazor(string text)
         {
+            //Regex.Replace(text, "<razor>(.*?)</razor>", )
             return text.Replace("<!---", "@*<!---*@")
                 .Replace("--->", "@*--->*@");
 
@@ -224,7 +226,7 @@ Layout = ""~/Views/Wiki/{wikiPage.LayoutPageId}.cshtml"";
 {content}
 ";
             }
-            System.IO.File.WriteAllText(path, content);
+            System.IO.File.WriteAllText(path, content, Encoding.UTF8);
         }
 
         public ActionResult SavePagesFromDb()
