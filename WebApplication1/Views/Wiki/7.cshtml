@@ -1,12 +1,7 @@
-﻿@*<!---*@
-@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-@*--->*@
+﻿@*<razor>*@@{ Layout = "~/Views/Shared/_Layout.cshtml"; }@*</razor>*@
 <p>Навигация</p>
 <p>Название</p>
 <p>Текст</p>
 <p>Комментарии</p>
-@*<!---*@ @RenderBody() @*--->*@
-<p>@Model.Page.Id @{ Html.RenderAction("Comments", "Wiki", new {wikiPageId = Model.Page.Id}); }</p>
+@*<razor>*@@RenderBody()@*</razor>*@@*<razor>*@@Model.Page.Id @{ Html.RenderAction("Comments", "Wiki", new {wikiPageId = Model.Page.Id}); }@*</razor>*@
 <p>&nbsp;</p>

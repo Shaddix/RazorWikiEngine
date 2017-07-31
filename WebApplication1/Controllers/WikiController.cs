@@ -173,21 +173,33 @@ namespace RuPM.Controllers
 
         public string ParseContentForEditor(string text)
         {
-            return text.Replace("@*<!---*@", "<!---")
-                .Replace("@*--->*@", "--->");
+            //return text.Replace("@*<!---*@", "<!---")
+            //    .Replace("@*--->*@", "--->");
 
-            return text.Replace("@*<div class='razorCode'>@", "<div class='razorCode'>")
-                .Replace("@*</div class='razorCode'>*@", "</div class='razorCode'>");
+            return text.Replace("@*<razor>*@", "<razor>")
+                .Replace("@*</razor>*@", "</razor>");
         }
+
         public string ParseContentForRazor(string text)
         {
-            //Regex.Replace(text, "<razor>(.*?)</razor>", )
-            return text.Replace("<!---", "@*<!---*@")
-                .Replace("--->", "@*--->*@");
-
-            return text.Replace("<div class='razorCode'>", "@*<div class='razorCode'>@")
-                .Replace("</div class='razorCode'>", "@*</div class='razorCode'>*@");
+            var matches = Regex.Matches(text, "<razor>(.*?)</razor>", RegexOptions.Singleline);
+            var result = text;
+            foreach (Match match in matches)
+            {
+                result = result.Replace(match.Value, "@*<razor>*@" + match.Groups[1].Value.Replace("&lt;", "<") + "@*</razor>*@");
+            }
+            return result;
         }
+
+        //public string ParseContentForRazor(string text)
+        //{
+        //    //Regex.Replace(text, "<razor>(.*?)</razor>", )
+        //    return text.Replace("<!---", "@*<!---*@")
+        //        .Replace("--->", "@*--->*@");
+
+        //    return text.Replace("<div class='razorCode'>", "@*<div class='razorCode'>@")
+        //        .Replace("</div class='razorCode'>", "@*</div class='razorCode'>*@");
+        //}
         [HttpPost]
         public ActionResult EditPage(EditPageFormModel form)
         {
