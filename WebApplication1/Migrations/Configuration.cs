@@ -29,16 +29,29 @@ namespace WebApplication1.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
-            context.WikiPages.AddOrUpdate(x => x.ViewPath, new WikiPage()
-            {
-                ViewPath = "Wiki/Index.cshtml",
-                PageTitle = "Wiki Index",
-            });
-            context.WikiPages.AddOrUpdate(x => x.ViewPath, new WikiPage()
-            {
-                ViewPath = "Wiki/Comments.cshtml",
-                PageTitle = "Wiki Comments",
-            });
+            if (!context.WikiPages.Any(x => x.ViewPath == "Wiki/Index.cshtml"))
+                context.WikiPages.Add(new WikiPage()
+                {
+                    ViewPath = "Wiki/Index.cshtml",
+                    PageTitle = "Wiki Index",
+                });
+
+
+            if (!context.WikiPages.Any(x => x.ViewPath == "Wiki/Comments.cshtml"))
+                context.WikiPages.AddOrUpdate(x => x.ViewPath, new WikiPage()
+                {
+                    ViewPath = "Wiki/Comments.cshtml",
+                    PageTitle = "Wiki Comments",
+                });
+
+
+            if (!context.WikiPages.Any(x => x.ViewPath == "Wiki/Pages.cshtml"))
+                context.WikiPages.AddOrUpdate(x => x.ViewPath, new WikiPage()
+                {
+                    ViewPath = "Wiki/Pages.cshtml",
+                    PageTitle = "Wiki Pages List",
+                    ViewUrl = "/Wiki/Pages"
+                });
         }
     }
 }

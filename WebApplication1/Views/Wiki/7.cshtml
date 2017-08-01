@@ -1,7 +1,10 @@
-﻿@*<razor>*@@{ Layout = "~/Views/Shared/_Layout.cshtml"; }@*</razor>*@
-<p>Навигация</p>
-<p>Название</p>
-<p>Текст</p>
-<p>Комментарии</p>
-@*<razor>*@@RenderBody()@*</razor>*@@*<razor>*@@Model.Page.Id @{ Html.RenderAction("Comments", "Wiki", new {wikiPageId = Model.Page.Id}); }@*</razor>*@
+﻿@*<!---*@ @{
+Layout = "~/Views/Wiki/12.cshtml";
+} @*--->*@
+<div class="l-content__title">@*<razor>*@@Model.Page.PageTitle<a class="post-edit-link" href="EditPage?pageId=@Model.Page.Id">Edit This</a>@*</razor>*@</div>
+<article class="l-content__text">@*<razor>*@@RenderBody()@*</razor>*@<footer class="l-content__footer">
+<div class="l-content__autor"><i class="fa fa-user-o" aria-hidden="true"></i> Автор:@*<razor>*@admin@*</razor>*@</div>
+<div class="l-content__updated"><i class="fa fa-calendar-o" aria-hidden="true"></i> Изменён&nbsp;@*<razor>*@@Model.Page.ChangedDate.ToString("dd/MM/yyyy")@*</razor>*@</div>
+</footer>@*<razor>*@@{ Html.RenderAction("Comments", "Wiki", new {wikiPageId = Model.Page.Id}); }@*</razor>*@
 <p>&nbsp;</p>
+</article>

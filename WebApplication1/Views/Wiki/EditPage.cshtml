@@ -1,11 +1,17 @@
 ﻿@model RuPM.Controllers.WikiController.EditPageModel
-
-<h2>title</h2>
 <form method="post">
     @Html.HiddenFor(x => x.Form.Id)
     @Html.EditorFor(x => x.Form.Title)
-    @Html.CheckBoxFor(x => x.Form.IsLayout)
+    @Html.LabelFor(x => x.Form.IsLayout)    @Html.CheckBoxFor(x => x.Form.IsLayout)
+    @Html.LabelFor(x => x.Form.StickCategory)    @Html.CheckBoxFor(x => x.Form.StickCategory)
+    @Html.LabelFor(x => x.Form.StickGlobal)    @Html.CheckBoxFor(x => x.Form.StickGlobal)
+    @Html.LabelFor(x => x.Form.IsSystemPage)    @Html.CheckBoxFor(x => x.Form.IsSystemPage)
+    @Html.LabelFor(x => x.Form.Tags)    @Html.EditorFor(x => x.Form.Tags)
     @Html.DropDownListFor(x => x.Form.LayoutPageId, Model.LayoutPagesSelectList)
+
+    <input type="submit" style="margin-left: 30px;" value="Save" />
+    <input type="button" value="Delete" onclick="document.location = '/Wiki/Delete?wikiPageId=' + document.getElementById('Form_Id').value;" />
+
     <script src="~/scripts/tinymce/tinymce.min.js"></script>
     <!-- Script to wire up your TinyMCE editor -->
     @Html.TextAreaFor(model => model.Form.Content)
@@ -18,26 +24,25 @@
             plugins: "code",
             // Theme options
             theme_advanced_buttons1:
-                "code, save,newdocument,|,code,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,styleselect,formatselect,fontselect,fontsizeselect",
+            "code, save,newdocument,|,code,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,styleselect,formatselect,fontselect,fontsizeselect",
             theme_advanced_buttons2:
-                "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+            "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
             theme_advanced_buttons3:
-                "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
+            "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
             theme_advanced_buttons4:
-                "insertlayer,moveforward,movebackward,absolute,|,styleprops,spellchecker,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,blockquote,pagebreak,|,insertfile,insertimage",
+            "insertlayer,moveforward,movebackward,absolute,|,styleprops,spellchecker,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,blockquote,pagebreak,|,insertfile,insertimage",
             theme_advanced_buttons3_add: "code",
             theme_advanced_toolbar_location: "top",
             theme_advanced_toolbar_align: "left",
             theme_advanced_statusbar_location: "bottom",
             theme_advanced_resizing: true,
-            extended_valid_elements : "razor",
+remove_linebreaks: false, 
+            height: '400px',
+            verify_html: false,
             custom_elements: "razor",
+            valid_elements: "*[*]",
             // Example content CSS (should be your site CSS)
-            content_css: "/content/site.css"
+            content_css: ["/content/site.css", "/Content/Wiki/style.css", "/Content/Wiki/font-awesome.min.css", "/Content/Wiki/wp-syntax.css"]
         });
     </script>
-
-
-    <input type="submit" value="Save" />
-    <input type="button" value="Delete" onclick="document.location = '/Wiki/Delete?wikiPageId=' + document.getElementById('Form_Id').value;" />
 </form>

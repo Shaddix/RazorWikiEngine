@@ -16,17 +16,27 @@ namespace RuPM.Models.Database
         public string Content { get; set; }
         public string ViewPath { get; set; }
         public string ViewUrl { get; set; }
-        public IList<WikiTag> Tags { get; set; }
+        public virtual IList<WikiTag> Tags { get; set; }
+        public virtual IList<WikiComment> Comments { get; set; }
         public bool IsLayout { get; set; }
 
         [ForeignKey(nameof(LayoutPageId))]
         public WikiPage LayoutPage { get; set; }
         public int? LayoutPageId { get; set; }
+        public bool StickGlobal { get; set; }
+        public bool StickCategory { get; set; }
+
+        /// <summary>
+        /// System pages are not shown to the visitor
+        /// </summary>
+        public bool IsSystemPage { get; set; }
 
         public WikiPage()
         {
             ChangedDate = DateTimeOffset.Now;
             CreatedDate = DateTimeOffset.Now;
+            Tags = new List<WikiTag>();
+            Comments = new List<WikiComment>();
         }
     }
 }

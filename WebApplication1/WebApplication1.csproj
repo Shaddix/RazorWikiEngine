@@ -196,6 +196,18 @@
     <Compile Include="Migrations\201707301233201_WikiPage_CustomUrlPath.Designer.cs">
       <DependentUpon>201707301233201_WikiPage_CustomUrlPath.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708011309530_WikiPage_Stick.cs" />
+    <Compile Include="Migrations\201708011309530_WikiPage_Stick.Designer.cs">
+      <DependentUpon>201708011309530_WikiPage_Stick.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708011325090_WikiTag_IsSystemTag.cs" />
+    <Compile Include="Migrations\201708011325090_WikiTag_IsSystemTag.Designer.cs">
+      <DependentUpon>201708011325090_WikiTag_IsSystemTag.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708011605590_WikiPage_NewFields.cs" />
+    <Compile Include="Migrations\201708011605590_WikiPage_NewFields.Designer.cs">
+      <DependentUpon>201708011605590_WikiPage_NewFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -381,11 +393,12 @@
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
     <Content Include="Scripts\tinymce\langs\readme.md" />
     <Content Include="Views\Wiki\EditPage.cshtml" />
-    <Content Include="Views\Wiki\Pages.cshtml" />
+    <Content Include="Views\Wiki\AdminPages.cshtml" />
     <Content Include="Views\Wiki\Comments.cshtml" />
     <Content Include="Views\Wiki\Tst.cshtml" />
     <Content Include="Views\Shared\_Layout2.cshtml" />
     <Content Include="Views\Wiki\Index.cshtml" />
+    <Content Include="Views\Wiki\Pages.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -427,6 +440,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201707301233201_WikiPage_CustomUrlPath.resx">
       <DependentUpon>201707301233201_WikiPage_CustomUrlPath.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708011309530_WikiPage_Stick.resx">
+      <DependentUpon>201708011309530_WikiPage_Stick.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708011325090_WikiTag_IsSystemTag.resx">
+      <DependentUpon>201708011325090_WikiTag_IsSystemTag.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708011605590_WikiPage_NewFields.resx">
+      <DependentUpon>201708011605590_WikiPage_NewFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

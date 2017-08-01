@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,10 @@ namespace RuPM.Controllers
         public string Title { get; set; }
         public int? LayoutPageId { get; set; }
         public bool IsLayout { get; set; }
+        public string Tags { get; set; }
+        public bool StickGlobal { get; set; }
+        public bool StickCategory { get; set; }
+        public bool IsSystemPage { get; set; }
     }
 
     public class WikiPageModel
@@ -55,7 +60,7 @@ namespace RuPM.Controllers
             var wikiPage = _db.WikiPages.Find(wikiPageId);
             _db.WikiPages.Remove(wikiPage);
             _db.SaveChanges();
-            return RedirectToAction("Pages");
+            return RedirectToAction("AdminPages");
         }
 
         public class FormContainer<T>
@@ -65,16 +70,80 @@ namespace RuPM.Controllers
 
         public class PagesViewModel
         {
-            public List<WikiPage> Pages { get; set; }
+            public List<WikiPageViewModel> Pages { get; set; }
         }
-        public ActionResult Pages()
+        public ActionResult AdminPages()
         {
             var model = new PagesViewModel()
             {
-                Pages = _db.WikiPages.ToList(),
+                Pages = GetPages(_db.WikiPages, showSystem: true),
             };
             return View(model);
         }
+
+        private List<WikiPageViewModel> GetPages(IQueryable<WikiPage> dbWikiPages, bool global = true, int page = 1, bool showSystem = false)
+        {
+            var query = dbWikiPages
+                .Include(x => x.Tags)
+                ;
+            if (!showSystem)
+                query = query.Where(x => !x.IsSystemPage);
+            if (global)
+            {
+                query = query.OrderBy(x => x.StickGlobal).ThenByDescending(x => x.CreatedDate);
+            }
+            else
+            {
+                query = query.OrderBy(x => x.StickCategory).ThenByDescending(x => x.CreatedDate);
+            }
+            var perPage = 10;
+            var pages = query
+                .Take(perPage)
+                .Skip((page - 1) * perPage)
+                .Select(x => new
+                {
+                    Page = x,
+                    Comments = x.Comments.Count,
+                }).ToList();
+
+            var result = pages.Select(x => new WikiPageViewModel()
+            {
+                Tags = x.Page.Tags,
+                IsSticky = global ? x.Page.StickGlobal : x.Page.StickCategory,
+                CommentsCount = x.Comments,
+                Page = x.Page,
+            })
+            .ToList();
+
+            return result;
+        }
+
+        public class WikiPageViewModel
+        {
+            public IList<WikiTag> Tags { get; set; }
+            public int CommentsCount { get; set; }
+            public bool IsSticky { get; set; }
+            public WikiPage Page { get; set; }
+        }
+
+        public ActionResult Pages(string tag)
+        {
+            var pages = _db.WikiPages
+                .Include(x => x.Tags)
+                ;
+            if (!string.IsNullOrEmpty(tag))
+            {
+                tag = tag.ToLower();
+                pages = pages.Where(x => x.Tags.Any(z => z.TagForLink == tag));
+            }
+
+            var model = new PagesViewModel()
+            {
+                Pages = GetPages(pages, global: string.IsNullOrEmpty(tag?.Trim())),
+            };
+            return View(model);
+        }
+
 
         public class EditPageModel
         {
@@ -107,6 +176,10 @@ namespace RuPM.Controllers
                     Id = wikiPage.Id,
                     Title = wikiPage.PageTitle,
                     IsLayout = wikiPage.IsLayout,
+                    StickCategory = wikiPage.StickCategory,
+                    StickGlobal = wikiPage.StickGlobal,
+                    IsSystemPage = wikiPage.IsSystemPage,
+                    Tags = string.Join(", ", wikiPage.Tags.Select(x => x.TagForLink)),
                 }
             };
 
@@ -175,18 +248,25 @@ namespace RuPM.Controllers
         {
             //return text.Replace("@*<!---*@", "<!---")
             //    .Replace("@*--->*@", "--->");
-
-            return text.Replace("@*<razor>*@", "<razor>")
+            var result = text;
+            result = Regex.Replace(result, "(@model.*)$", "<razor>$1</razor>", RegexOptions.Multiline);
+            return result
+                .Replace("@*<razor>*@", "<razor>")
                 .Replace("@*</razor>*@", "</razor>");
         }
 
         public string ParseContentForRazor(string text)
         {
-            var matches = Regex.Matches(text, "<razor>(.*?)</razor>", RegexOptions.Singleline);
             var result = text;
+            result = Regex.Replace(result, "<razor>(@model.*?)</razor>", "$1");
+            var matches = Regex.Matches(text, "<razor>(.*?)</razor>", RegexOptions.Singleline);
             foreach (Match match in matches)
             {
-                result = result.Replace(match.Value, "@*<razor>*@" + match.Groups[1].Value.Replace("&lt;", "<") + "@*</razor>*@");
+                result = result.Replace(match.Value, "@*<razor>*@" +
+                    match.Groups[1].Value
+                        .Replace("&lt;", "<")
+                        .Replace("&gt;", ">")
+                    + "@*</razor>*@");
             }
             return result;
         }
@@ -206,10 +286,37 @@ namespace RuPM.Controllers
             if (ModelState.IsValid)
             {
                 var wikiPage = _db.WikiPages.Find(form.Id) ?? _db.WikiPages.Add(new WikiPage());
-                wikiPage.Content = ParseContentForRazor(form.Content);
+                wikiPage.Content = ParseContentForRazor(form.Content ?? "");
                 wikiPage.PageTitle = form.Title;
                 wikiPage.IsLayout = form.IsLayout;
                 wikiPage.LayoutPageId = form.LayoutPageId;
+                wikiPage.IsSystemPage = form.IsLayout || form.IsSystemPage;
+                wikiPage.StickGlobal = form.StickGlobal;
+                wikiPage.StickCategory = form.StickCategory;
+
+
+                var dbTags = _db.WikiTags.ToList();
+                var tags = (form.Tags ?? "").Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => x.Trim().ToLower())
+                    .Where(x => !string.IsNullOrEmpty(x));
+
+                wikiPage.Tags.Clear();
+                foreach (var tag in tags)
+                {
+                    var dbTag = dbTags.FirstOrDefault(x => x.TagForLink == tag);
+                    if (dbTag == null)
+                    {
+                        dbTag = new WikiTag()
+                        {
+                            FullTag = tag,
+                            IsSystemTag = false,
+                            TagForLink = tag,
+                        };
+                        _db.WikiTags.Add(dbTag);
+                    }
+                    wikiPage.Tags.Add(dbTag);
+                }
+
                 _db.SaveChanges();
 
                 SavePage(wikiPage);
