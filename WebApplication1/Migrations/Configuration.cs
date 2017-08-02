@@ -53,7 +53,7 @@ namespace WebApplication1.Migrations
                     Content = @"@model RuPM.Controllers.WikiController.CommentsModel
 <div class=""comments"">@*<razor>*@@foreach (var comment in Model.Comments) {
 <article class=""comment byuser comment-author-admin bypostauthor even thread-even depth-1"" id=""li-comment-@comment.Id""><header>
-<h4>@comment.Id</h4>
+<h4>@comment.Author.Login</h4>
 <time>@comment.CreatedDate.ToString(""dd/MM/yyyy hh:mm"")</time></header>
 <section>
 <p>@comment.Text</p>
