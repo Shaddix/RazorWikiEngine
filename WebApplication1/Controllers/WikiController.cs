@@ -38,7 +38,8 @@ namespace RuPM.Controllers
 
     public class WikiController : ControllerBase
     {
-        [Route("wiki/page/{pageId:int}/")]
+        [Route("Wiki/Page/{pageId:int}")]
+        [Route("Wiki/GetPage")]
         public ActionResult GetPage(int pageId)
         {
             var page = _db.WikiPages.Find(pageId);
@@ -138,7 +139,9 @@ namespace RuPM.Controllers
             public WikiPage Page { get; set; }
         }
 
-        public ActionResult Pages(string tag)
+        [Route("wiki/pages/{tag}")]
+        [Route("wiki/pages")]
+        public ActionResult Pages(string tag, int page = 1)
         {
             var pages = _db.WikiPages
                 .Include(x => x.Tags)
@@ -166,10 +169,24 @@ namespace RuPM.Controllers
         }
 
         public bool IsWikiAdmin => true;
-        public User CurrentUser => new User()
+
+        public User CurrentUser
         {
-            Login = "tst",
-        };
+            get
+            {
+                var user = _db.Users.Find("tst");
+                if (user == null)
+                {
+                    user = new User()
+                    {
+                        Login = "tst",
+                    };
+                    _db.Users.Add(user);
+                }
+                return user;
+
+            }
+        }
 
         private bool CanEditPage(WikiPage wikiPage)
         {
@@ -392,8 +409,10 @@ namespace RuPM.Controllers
             var content = wikiPage.Content;
             if (wikiPage.LayoutPageId != null)
             {
+                var layoutPagePath = string.IsNullOrEmpty(wikiPage.LayoutPage.ViewPath) ? $"~/Views/Wiki/{wikiPage.LayoutPageId}.cshtml"
+                    : $"~/Views/{wikiPage.LayoutPage.ViewPath}";
                 content = $@"@*<!---*@ @{{
-Layout = ""~/Views/Wiki/{wikiPage.LayoutPageId}.cshtml"";
+Layout = ""{layoutPagePath}"";
 }} @*--->*@
 {content}
 ";
