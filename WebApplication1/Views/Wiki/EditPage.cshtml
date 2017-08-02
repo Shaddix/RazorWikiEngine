@@ -31,7 +31,7 @@
     <input type="submit" style="margin-left: 30px;" value="Save" />
     <input type="button" value="Delete" onclick="document.location = '/Wiki/Delete?wikiPageId=' + document.getElementById('Form_Id').value;" />
 
-    <script src="~/scripts/tinymce/tinymce.min.js"></script>
+    <script src="~/Content/wiki/tinymce/tinymce.min.js"></script>
     <!-- Script to wire up your TinyMCE editor -->
     @Html.TextAreaFor(model => model.Form.Content)
     <script type="text/javascript">
