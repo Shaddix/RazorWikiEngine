@@ -21,7 +21,7 @@ namespace RuPM.Models.Database
         public bool IsLayout { get; set; }
 
         [ForeignKey(nameof(LayoutPageId))]
-        public WikiPage LayoutPage { get; set; }
+        public virtual WikiPage LayoutPage { get; set; }
         public int? LayoutPageId { get; set; }
         public bool StickGlobal { get; set; }
         public bool StickCategory { get; set; }
@@ -31,7 +31,7 @@ namespace RuPM.Models.Database
         /// </summary>
         public bool IsSystemPage { get; set; }
 
-        public User Author { get; set; }
+        public virtual User Author { get; set; }
 
         public WikiPage()
         {

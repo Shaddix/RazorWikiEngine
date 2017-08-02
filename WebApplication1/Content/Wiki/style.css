@@ -1,6 +1,9 @@
 /*
   Theme Name: Rubius Edu
 */
+body.mce-content-body p {
+  margin-bottom: 0px;
+}
 razor {
   color: red;
   font-weight: bold;

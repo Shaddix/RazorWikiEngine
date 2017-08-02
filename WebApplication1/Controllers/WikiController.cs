@@ -409,7 +409,8 @@ namespace RuPM.Controllers
             var content = wikiPage.Content;
             if (wikiPage.LayoutPageId != null)
             {
-                var layoutPagePath = string.IsNullOrEmpty(wikiPage.LayoutPage.ViewPath) ? $"~/Views/Wiki/{wikiPage.LayoutPageId}.cshtml"
+                var layoutPage = _db.WikiPages.Find(wikiPage.LayoutPageId.Value);
+                var layoutPagePath = string.IsNullOrEmpty(layoutPage?.ViewPath) ? $"~/Views/Wiki/{wikiPage.LayoutPageId}.cshtml"
                     : $"~/Views/{wikiPage.LayoutPage.ViewPath}";
                 content = $@"@*<!---*@ @{{
 Layout = ""{layoutPagePath}"";
