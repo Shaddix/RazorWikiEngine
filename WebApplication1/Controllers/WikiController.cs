@@ -252,6 +252,7 @@ namespace RuPM.Controllers
             var model = new CommentsModel();
             var perPage = 30;
             var comments = _db.WikiComments
+                .Include(x => x.Author)
                 .Where(x => x.WikiPage.Id == wikiPageId)
                 .OrderByDescending(x => x.CreatedDate)
                 .Skip(perPage * (page - 1))
