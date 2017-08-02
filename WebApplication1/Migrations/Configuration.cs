@@ -52,6 +52,17 @@ namespace WebApplication1.Migrations
                     PageTitle = "Wiki Pages List",
                     ViewUrl = "/Wiki/Pages"
                 });
+
+            if (!context.WikiPages.Any(x => x.ViewPath == "Wiki/Blog_Post_Layout.cshtml"))
+                context.WikiPages.AddOrUpdate(x => x.ViewPath, new WikiPage()
+                {
+                    IsLayout = true,
+                    IsSystemPage = true,
+                    ViewPath = "Wiki/Blog_Post_Layout.cshtml",
+
+                    PageTitle = "Blog Post Layout",
+                });
+
         }
     }
 }

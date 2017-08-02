@@ -161,6 +161,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\WikiController.cs" />
     <Compile Include="Controllers\Wiki\MainModelContainer.cs" />
+    <Compile Include="Controllers\Wiki\User.cs" />
     <Compile Include="Controllers\Wiki\WikiComment.cs" />
     <Compile Include="Controllers\Wiki\WikiPage.cs" />
     <Compile Include="Controllers\Wiki\WikiPageHistory.cs" />
@@ -207,6 +208,10 @@
     <Compile Include="Migrations\201708011605590_WikiPage_NewFields.cs" />
     <Compile Include="Migrations\201708011605590_WikiPage_NewFields.Designer.cs">
       <DependentUpon>201708011605590_WikiPage_NewFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708020535373_WikiPage_Author.cs" />
+    <Compile Include="Migrations\201708020535373_WikiPage_Author.Designer.cs">
+      <DependentUpon>201708020535373_WikiPage_Author.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -449,6 +454,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708011605590_WikiPage_NewFields.resx">
       <DependentUpon>201708011605590_WikiPage_NewFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708020535373_WikiPage_Author.resx">
+      <DependentUpon>201708020535373_WikiPage_Author.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

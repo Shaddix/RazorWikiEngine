@@ -20,6 +20,7 @@ namespace RuPM.Controllers
         public string Content { get; set; }
 
         public string Title { get; set; }
+        [Display(Name = "Layout page")]
         public int? LayoutPageId { get; set; }
         public bool IsLayout { get; set; }
         public string Tags { get; set; }
@@ -32,6 +33,7 @@ namespace RuPM.Controllers
     {
         public MainModelContainer Database { get; set; }
         public WikiPage Page { get; set; }
+        public bool CanEdit { get; set; }
     }
 
     public class WikiController : ControllerBase
@@ -43,6 +45,7 @@ namespace RuPM.Controllers
             var model = new WikiPageModel
             {
                 Page = page,
+                CanEdit = CanEditPage(page),
                 Database = ServiceLocator.Instance.CreateReadOnlyDatabase(),
             };
 
@@ -58,6 +61,12 @@ namespace RuPM.Controllers
         public ActionResult Delete(int wikiPageId)
         {
             var wikiPage = _db.WikiPages.Find(wikiPageId);
+            if (wikiPage == null)
+                return HttpNotFound();
+
+            if (!CanEditPage(wikiPage))
+                return new HttpUnauthorizedResult();
+
             _db.WikiPages.Remove(wikiPage);
             _db.SaveChanges();
             return RedirectToAction("AdminPages");
@@ -74,20 +83,23 @@ namespace RuPM.Controllers
         }
         public ActionResult AdminPages()
         {
+            var pages = _db.WikiPages.Include(x => x.Author);
+            if (!IsWikiAdmin)
+                pages = pages.Where(x => !x.IsSystemPage && x.Author.Login == CurrentUser.Login);
+
             var model = new PagesViewModel()
             {
-                Pages = GetPages(_db.WikiPages, showSystem: true),
+                Pages = GetPages(pages),
             };
             return View(model);
         }
 
-        private List<WikiPageViewModel> GetPages(IQueryable<WikiPage> dbWikiPages, bool global = true, int page = 1, bool showSystem = false)
+        private List<WikiPageViewModel> GetPages(IQueryable<WikiPage> dbWikiPages, bool global = true, int page = 1)
         {
             var query = dbWikiPages
                 .Include(x => x.Tags)
                 ;
-            if (!showSystem)
-                query = query.Where(x => !x.IsSystemPage);
+
             if (global)
             {
                 query = query.OrderBy(x => x.StickGlobal).ThenByDescending(x => x.CreatedDate);
@@ -150,10 +162,26 @@ namespace RuPM.Controllers
             public EditPageFormModel Form { get; set; }
             public WikiPage WikiPage { get; set; }
             public List<SelectListItem> LayoutPagesSelectList { get; set; }
+            public bool IsAdmin { get; set; }
         }
+
+        public bool IsWikiAdmin => true;
+        public User CurrentUser => new User()
+        {
+            Login = "tst",
+        };
+
+        private bool CanEditPage(WikiPage wikiPage)
+        {
+            return IsWikiAdmin || wikiPage.Author.Login == CurrentUser.Login;
+        }
+
         public ActionResult EditPage(int? pageId)
         {
             var wikiPage = _db.WikiPages.Find(pageId) ?? new WikiPage();
+            if (pageId.HasValue && !CanEditPage(wikiPage))
+                return this.HttpNotFound();
+
             var selectList = _db.WikiPages.Where(x => x.IsLayout).Select(x => new SelectListItem()
             {
                 Text = x.PageTitle,
@@ -170,6 +198,7 @@ namespace RuPM.Controllers
             {
                 WikiPage = wikiPage,
                 LayoutPagesSelectList = selectList,
+                IsAdmin = IsWikiAdmin,
                 Form = new EditPageFormModel()
                 {
                     Content = ParseContentForEditor(wikiPage.Content ?? ""),
@@ -246,8 +275,6 @@ namespace RuPM.Controllers
 
         public string ParseContentForEditor(string text)
         {
-            //return text.Replace("@*<!---*@", "<!---")
-            //    .Replace("@*--->*@", "--->");
             var result = text;
             result = Regex.Replace(result, "(@model.*)$", "<razor>$1</razor>", RegexOptions.Multiline);
             return result
@@ -285,15 +312,30 @@ namespace RuPM.Controllers
         {
             if (ModelState.IsValid)
             {
-                var wikiPage = _db.WikiPages.Find(form.Id) ?? _db.WikiPages.Add(new WikiPage());
+                var wikiPage = _db.WikiPages.Find(form.Id) ?? _db.WikiPages.Add(new WikiPage()
+                {
+                    Author = CurrentUser,
+                });
+
+                if (wikiPage.Id != 0 && !CanEditPage(wikiPage))
+                    return EditPage(wikiPage.Id);
+
                 wikiPage.Content = ParseContentForRazor(form.Content ?? "");
                 wikiPage.PageTitle = form.Title;
-                wikiPage.IsLayout = form.IsLayout;
-                wikiPage.LayoutPageId = form.LayoutPageId;
-                wikiPage.IsSystemPage = form.IsLayout || form.IsSystemPage;
-                wikiPage.StickGlobal = form.StickGlobal;
-                wikiPage.StickCategory = form.StickCategory;
 
+                if (IsWikiAdmin)
+                {
+                    wikiPage.IsLayout = form.IsLayout;
+                    wikiPage.LayoutPageId = form.LayoutPageId;
+                    wikiPage.IsSystemPage = form.IsLayout || form.IsSystemPage;
+                    wikiPage.StickGlobal = form.StickGlobal;
+                    wikiPage.StickCategory = form.StickCategory;
+                }
+                else
+                {
+                    if (wikiPage.LayoutPageId == null)
+                        wikiPage.LayoutPage = _db.WikiPages.FirstOrDefault(x => x.ViewPath == "Wiki/Blog_Post_Layout.cshtml");
+                }
 
                 var dbTags = _db.WikiTags.ToList();
                 var tags = (form.Tags ?? "").Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
@@ -316,6 +358,7 @@ namespace RuPM.Controllers
                     }
                     wikiPage.Tags.Add(dbTag);
                 }
+
 
                 _db.SaveChanges();
 
@@ -350,6 +393,11 @@ Layout = ""~/Views/Wiki/{wikiPage.LayoutPageId}.cshtml"";
 
         public ActionResult SavePagesFromDb()
         {
+            foreach (var dbWikiPage in _db.WikiPages.ToList())
+            {
+                SavePage(dbWikiPage);
+            }
+
             return Content("");
         }
     }

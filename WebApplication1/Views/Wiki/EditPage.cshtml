@@ -2,12 +2,31 @@
 <form method="post">
     @Html.HiddenFor(x => x.Form.Id)
     @Html.EditorFor(x => x.Form.Title)
-    @Html.LabelFor(x => x.Form.IsLayout)    @Html.CheckBoxFor(x => x.Form.IsLayout)
-    @Html.LabelFor(x => x.Form.StickCategory)    @Html.CheckBoxFor(x => x.Form.StickCategory)
-    @Html.LabelFor(x => x.Form.StickGlobal)    @Html.CheckBoxFor(x => x.Form.StickGlobal)
-    @Html.LabelFor(x => x.Form.IsSystemPage)    @Html.CheckBoxFor(x => x.Form.IsSystemPage)
-    @Html.LabelFor(x => x.Form.Tags)    @Html.EditorFor(x => x.Form.Tags)
-    @Html.DropDownListFor(x => x.Form.LayoutPageId, Model.LayoutPagesSelectList)
+    @if (Model.IsAdmin)
+    {
+        
+        @Html.CheckBoxFor(x => x.Form.IsLayout)
+        @Html.LabelFor(x => x.Form.IsLayout)
+
+        
+        @Html.CheckBoxFor(x => x.Form.StickCategory)
+        @Html.LabelFor(x => x.Form.StickCategory)
+
+        
+        @Html.CheckBoxFor(x => x.Form.StickGlobal)
+        @Html.LabelFor(x => x.Form.StickGlobal)
+
+        
+        @Html.CheckBoxFor(x => x.Form.IsSystemPage)
+        @Html.LabelFor(x => x.Form.IsSystemPage)
+
+        @Html.LabelFor(x => x.Form.LayoutPageId)
+        @Html.DropDownListFor(x => x.Form.LayoutPageId, Model.LayoutPagesSelectList)
+    }
+    <div>
+    @Html.LabelFor(x => x.Form.Tags)&nbsp;@Html.EditorFor(x => x.Form.Tags)
+    </div>
+
 
     <input type="submit" style="margin-left: 30px;" value="Save" />
     <input type="button" value="Delete" onclick="document.location = '/Wiki/Delete?wikiPageId=' + document.getElementById('Form_Id').value;" />
@@ -36,7 +55,7 @@
             theme_advanced_toolbar_align: "left",
             theme_advanced_statusbar_location: "bottom",
             theme_advanced_resizing: true,
-remove_linebreaks: false, 
+            remove_linebreaks: false,
             height: '400px',
             verify_html: false,
             custom_elements: "razor",

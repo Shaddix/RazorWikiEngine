@@ -31,6 +31,8 @@ namespace RuPM.Models.Database
         /// </summary>
         public bool IsSystemPage { get; set; }
 
+        public User Author { get; set; }
+
         public WikiPage()
         {
             ChangedDate = DateTimeOffset.Now;

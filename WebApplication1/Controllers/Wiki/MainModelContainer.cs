@@ -10,6 +10,7 @@ namespace RuPM.Models.Database
         public DbSet<WikiTag> WikiTags { get; set; }
         public DbSet<WikiComment> WikiComments { get; set; }
         public DbSet<WikiPageHistory> WikiPageHistory { get; set; }
+        public DbSet<User> Users { get; set; }
 
         static MainModelContainer()
         {
