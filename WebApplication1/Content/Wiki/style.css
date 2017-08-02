@@ -1,6 +1,13 @@
 /*
   Theme Name: Rubius Edu
 */
+razor {
+  color: red;
+  font-weight: bold;
+}
+.btn {
+  text-align: left;
+}
 
 .comments {
 	margin: 60px 0 40px;

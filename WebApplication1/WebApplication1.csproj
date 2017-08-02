@@ -213,6 +213,10 @@
     <Compile Include="Migrations\201708020535373_WikiPage_Author.Designer.cs">
       <DependentUpon>201708020535373_WikiPage_Author.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708020609507_WikiComment_Author.cs" />
+    <Compile Include="Migrations\201708020609507_WikiComment_Author.Designer.cs">
+      <DependentUpon>201708020609507_WikiComment_Author.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -457,6 +461,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708020535373_WikiPage_Author.resx">
       <DependentUpon>201708020535373_WikiPage_Author.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708020609507_WikiComment_Author.resx">
+      <DependentUpon>201708020609507_WikiComment_Author.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

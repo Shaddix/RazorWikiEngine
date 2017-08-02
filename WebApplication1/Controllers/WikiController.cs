@@ -38,7 +38,7 @@ namespace RuPM.Controllers
 
     public class WikiController : ControllerBase
     {
-        [Route("/wiki/page/{pageId:int}/")]
+        [Route("wiki/page/{pageId:int}/")]
         public ActionResult GetPage(int pageId)
         {
             var page = _db.WikiPages.Find(pageId);
@@ -57,7 +57,7 @@ namespace RuPM.Controllers
             return View();
         }
 
-        [Route("/Wiki/Delete/{wikiPageId}")]
+        [Route("wiki/Delete/{wikiPageId}")]
         public ActionResult Delete(int wikiPageId)
         {
             var wikiPage = _db.WikiPages.Find(wikiPageId);
@@ -264,6 +264,7 @@ namespace RuPM.Controllers
                 if (comment.WikiPage != null)
                 {
                     comment.Text = Form.Text;
+                    comment.Author = CurrentUser;
                     _db.WikiComments.AddOrUpdate(comment);
                     _db.SaveChanges();
                     return RedirectToAction("GetPage", new { pageId = Form.WikiPageId });
@@ -319,6 +320,15 @@ namespace RuPM.Controllers
 
                 if (wikiPage.Id != 0 && !CanEditPage(wikiPage))
                     return EditPage(wikiPage.Id);
+
+                var history = new WikiPageHistory()
+                {
+                    ChangedDate = DateTimeOffset.Now,
+                    Content = wikiPage.Content,
+                    PageTitle = wikiPage.PageTitle,
+                    WikiPage = wikiPage,
+                };
+                _db.WikiPageHistory.Add(history);
 
                 wikiPage.Content = ParseContentForRazor(form.Content ?? "");
                 wikiPage.PageTitle = form.Title;

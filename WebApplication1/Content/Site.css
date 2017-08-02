@@ -1,11 +1,4 @@
-﻿razor {
-  color: red;
-  font-weight: bold;
-}
-.btn {
-  text-align: left;
-}
-body {
+﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
